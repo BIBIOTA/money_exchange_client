@@ -3,6 +3,15 @@
     <h1 class="title">
       外幣匯率
     </h1>
+    <div class="flex justify-center" v-if="data?.currencies && data?.currencies?.length > 0">
+      <p class="text-center">目前選擇匯率:</p>
+      <select name="rate_from" id="rate_from" v-model="selectedCurrency">
+        <option
+          v-for="(currency, i) in data.currencies"
+          :key="`currency_${i}`"
+          :value="currency.currency_uuid">{{currency.name}}</option>
+      </select>
+    </div>
     <table class="table-auto mx-auto my-10" style="min-width: 300px">
       <thead>
         <tr>
@@ -30,8 +39,28 @@ import { useQuery } from '@urql/vue';
 
 export default {
   name: 'Home',
+  setup() {
+    const result = useQuery({
+      query: `
+        query {
+          currencies
+          {
+            currency_uuid,
+            name,
+          }
+        }
+      `,
+    });
+
+    return {
+      fetching: result.fetching,
+      data: result.data,
+      error: result.error,
+    };
+  },
   data() {
       return {
+        selectedCurrency: null,
         rates: [
           {
             name: '美金',
@@ -41,34 +70,15 @@ export default {
         ],
       }
   },
-  created() {
-
-    const result = useQuery({
-      query: `
-        query ($filters: ListCurrencyInput) {
-          currencies
-          (filters: $filters)
-          {
-            currency_uuid,
-            name,
-          }
+  watch: {
+    data(data) {
+      /* 設定初始化匯率資料為第一筆 */
+      if (!this.selectedCurrency) {
+        if (data?.currencies && data.currencies.length > 0) {
+          this.selectedCurrency = data.currencies[0].currency_uuid;
         }
-      `,
-      variables: {
-        // filters: {
-          // name: 'DFSSDccccFDFDF',
-          // currency_uuid: 'ae353410-9db5-439d-bcf6-1743a2a99896',
-        // }
       }
-    });
-
-    console.log(result);
-
-    // return {
-    //   fetching: result.fetching,
-    //   data: result.data,
-    //   error: result.error,
-    // };
+    }
   },
 }
 </script>
