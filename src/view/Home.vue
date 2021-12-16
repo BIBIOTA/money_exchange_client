@@ -3,11 +3,11 @@
     <h1 class="title">
       外幣匯率
     </h1>
-    <div class="flex justify-center" v-if="data?.currencies && data?.currencies?.length > 0">
+    <div class="flex justify-center" v-if="currencies && currencies.length > 0">
       <p class="text-center">目前選擇匯率:</p>
-      <select name="rate_from" id="rate_from" v-model="selectedCurrency">
+      <select name="rate_from" id="rate_from" v-model="selectedCurrency" @input="changeCurrency($event)">
         <option
-          v-for="(currency, i) in data.currencies"
+          v-for="(currency, i) in currencies"
           :key="`currency_${i}`"
           :value="currency.currency_uuid">{{currency.name}}</option>
       </select>
@@ -16,16 +16,16 @@
       <thead>
         <tr>
           <th class="border-2">幣別</th>
-          <th class="border-2">買入</th>
-          <th class="border-2">賣出</th>
+          <th class="border-2">1元{{computedSelectedCurrencyName}}匯率</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(rate, index) in rates" :key="`rate_${index}`">
-          <td class="border-2">{{rate.name}}</td>
-          <td class="border-2">{{rate.buy}}</td>
-          <td class="border-2">{{rate.sell}}</td>
-        </tr>
+        <template v-if="rates && rates?.length > 0">
+          <tr v-for="(rate, index) in rates" :key="`rate_${index}`">
+            <td class="border-2">{{rate.name}}</td>
+            <td class="border-2">{{rate.rate}}</td>
+          </tr>
+        </template>
       </tbody>
     </table>
     <p class="text-center">
@@ -35,51 +35,75 @@
 </template>
 
 <script>
-import { useQuery } from '@urql/vue';
+import gql from 'graphql-tag'
+
+const curreniesGql = gql`query currencyList {
+  currencies {
+    currency_uuid,
+    name
+  }
+}`;
+
+const ratesGql = gql`query rateList($currency_uuid: ID) {
+  rates(
+    filters: {
+      currency_uuid: $currency_uuid
+    }
+  ) {
+    rate_uuid,
+    rate,
+    name
+  }
+}`;
 
 export default {
   name: 'Home',
-  setup() {
-    const result = useQuery({
-      query: `
-        query {
-          currencies
-          {
-            currency_uuid,
-            name,
-          }
-        }
-      `,
-    });
-
-    return {
-      fetching: result.fetching,
-      data: result.data,
-      error: result.error,
-    };
+  apollo: {
+    currencies: curreniesGql,
   },
   data() {
       return {
         selectedCurrency: null,
-        rates: [
-          {
-            name: '美金',
-            buy: 10.1,
-            sell: 10.2,
-          }
-        ],
+        rates: null,
       }
   },
-  watch: {
-    data(data) {
-      /* 設定初始化匯率資料為第一筆 */
-      if (!this.selectedCurrency) {
-        if (data?.currencies && data.currencies.length > 0) {
-          this.selectedCurrency = data.currencies[0].currency_uuid;
-        }
-      }
+  methods: {
+    changeCurrency(e) {
+      this.$apollo.addSmartQuery('rates', {
+        query: ratesGql,
+        variables: {
+          currency_uuid: e.target.value
+        },
+        result ({ data, loading, networkStatus }) {
+          console.log({ data, loading, networkStatus })
+          if (data?.rates.length > 0) {
+            this.rates = data.rates;
+          }
+        },
+      })
     }
   },
+  watch: {
+    currencies(data) {
+      console.log(data);
+      if (!this.selectedCurrency) {
+        this.selectedCurrency = data[0].currency_uuid;
+      }
+    },
+  },
+  computed: {
+    computedSelectedCurrencyName() {
+      let name = '';
+      if (this.currencies && this.currencies.length > 0) {
+        this.currencies.forEach((item) => {
+          if (item.currency_uuid === this.selectedCurrency) {
+            name = item.name;
+          }
+        });
+      }
+      return name;
+    }
+  }
 }
 </script>
 
