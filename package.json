@@ -17,6 +17,7 @@
     "autoprefixer": "^9",
     "axios": "^0.24.0",
     "core-js": "^3.6.5",
+    "dayjs": "^1.10.7",
     "graphql": "^16.1.0",
     "graphql-codegen": "^0.4.0",
     "graphql-tag": "^2.12.6",
