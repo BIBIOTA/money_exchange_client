@@ -9,14 +9,14 @@
         <option
           v-for="(currency, i) in currencies"
           :key="`currency_${i}`"
-          :value="currency.currency_uuid">{{currency.name}}</option>
+          :value="currency.currency_uuid">{{currency.cn_name}}</option>
       </select>
     </div>
     <table class="table-auto mx-auto my-10" style="min-width: 300px">
       <thead>
         <tr>
           <th class="border-2">幣別</th>
-          <th class="border-2">1元{{computedSelectedCurrency.name}}匯率</th>
+          <th class="border-2">1元{{computedSelectedCurrency.cn_name}}匯率</th>
         </tr>
       </thead>
       <tbody>
@@ -41,20 +41,20 @@
     <h2 class="sub_title">
       匯率換算
     </h2>
-    <div class="flex justify-center" v-if="computedSelectedCurrency.name">
+    <div class="flex justify-center" v-if="computedSelectedCurrency.cn_name">
       <input
         @input="changeExchangeRate(exchangeInput)"
         type="number"
         class="input_hidden_arrows"
         v-model="exchangeInput.amount" />
-      <p class="text-center">元{{computedSelectedCurrency.name}}</p>
+      <p class="text-center">元{{computedSelectedCurrency.cn_name}}</p>
       <p class="text-center"> = {{NumberEPSILON(exchangeResult)}}元</p>
       <select
         @change="changeExchangeRate(exchangeInput)"
         name="rate_from" id="rate_from"
         v-model="exchangeInput.rate_uuid">
         <option
-          v-for="(rate, i) in distinctExchangeFrom"
+          v-for="(rate, i) in rates"
           :key="`currency_${i}`"
           :value="rate.rate_uuid">{{rate.name}}</option>
       </select>
@@ -68,9 +68,13 @@ import dayjs from 'dayjs';
 import { checkIsIntegerGreaterThanZero, NumberEPSILON } from '../validator/validator.js';
 
 const curreniesGql = gql`query currencyList {
-  currencies {
+  currencies (
+    filters: {
+      cn_name: "新台幣元"
+    }
+  ) {
     currency_uuid,
-    name
+    cn_name
     updated_at
   }
 }`;
@@ -170,7 +174,7 @@ export default {
       }
     },
     rates(data) {
-      if (!this.exchangeInput.rate_uuid) {
+      if (data?.length > 0 && !this.exchangeInput.rate_uuid) {
         this.exchangeInput.rate_uuid = data[0].rate_uuid;
         this.changeExchangeRate(this.exchangeInput);
       }
@@ -178,29 +182,20 @@ export default {
   },
   computed: {
     computedSelectedCurrency() {
-      let name = '';
+      let cn_name = '';
+      let code = '';
       let updatedAt = null;
       if (this.currencies && this.currencies.length > 0) {
         this.currencies.forEach((item) => {
           if (item.currency_uuid === this.selectedCurrency) {
-            name = item.name;
+            cn_name = item.cn_name;
+            code = item.code;
             updatedAt = dayjs(item.updated_at).locale('zh-tw').format('YYYY-MM-DD HH:mm:ss');
           }
         });
       }
-      return { name, updatedAt };
+      return { cn_name, code, updatedAt };
     },
-    distinctExchangeFrom() {
-      const arr = [];
-      if (this.rates && this.rates.length > 0) {
-        this.rates.forEach((item) => {
-          if (item.name !== this.computedSelectedCurrency.name) {
-            arr.push(item);
-          }
-        });
-      }
-      return arr;
-    }
   }
 }
 </script>
