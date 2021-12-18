@@ -4,7 +4,7 @@
       外幣匯率
     </h1>
     <div class="flex justify-center" v-if="currencies && currencies.length > 0">
-      <p class="text-center">目前選擇匯率:</p>
+      <p class="text-center text-white">目前選擇匯率:</p>
       <select name="rate_from" id="rate_from" v-model="selectedCurrency" @input="changeCurrency($event.target.value)">
         <option
           v-for="(currency, i) in currencies"
@@ -12,11 +12,11 @@
           :value="currency.currency_uuid">{{currency.name}} ({{currency.code}})</option>
       </select>
     </div>
-    <table class="table-auto mx-auto my-10" style="min-width: 300px">
+    <table class="table-auto mx-auto my-10 bg-gray-100" style="min-width: 300px">
       <thead>
         <tr>
-          <th class="border-2">幣別</th>
-          <th class="border-2">1元{{computedSelectedCurrency.name}}匯率</th>
+          <th class="border-2 text-white bg-gradient-to-t from-gray-400 to-gray-600">幣別</th>
+          <th class="border-2 text-white bg-gradient-to-t from-gray-400 to-gray-600">1元{{computedSelectedCurrency.name}}匯率</th>
         </tr>
       </thead>
       <tbody>
@@ -33,23 +33,29 @@
         </template>
       </tbody>
     </table>
-    <p class="text-center">
+    <p class="text-center text-white">
       資料更新時間: {{computedSelectedCurrency.updatedAt}}
       <br />
-      資料來源: <a href="https://rate.bot.com.tw/xrt?Lang=zh-TW" class="text-primary">台灣銀行外幣匯率</a>
+      資料來源: <a href="https://rate.bot.com.tw/xrt?Lang=zh-TW" class="text-yellow-200 hover:text-yellow-400" target="_blank">台灣銀行外幣匯率</a>
     </p>
     <h2 class="sub_title">
       匯率換算
     </h2>
-    <div class="flex justify-center" v-if="computedSelectedCurrency.name">
+    <div class="flex flex-col items-center pb-20 " v-if="computedSelectedCurrency.name">
       <input
         @input="changeExchangeRate(exchangeInput)"
         type="number"
-        class="input_hidden_arrows"
+        style="min-width: 300px"
+        class="text-center input_hidden_arrows"
         v-model="exchangeInput.amount" />
-      <p class="text-center">元{{computedSelectedCurrency.name}} ({{computedSelectedCurrency.code}})</p>
-      <p class="text-center"> = {{NumberEPSILON(exchangeResult)}}元</p>
+      <p class="text-center text-white">元{{computedSelectedCurrency.name}} ({{computedSelectedCurrency.code}})</p>
+      <p class="text-center text-white">=</p>
+      <p
+        style="max-width: 300px; word-break: break-all;"
+        class="text-center text-white">{{exchangeResult}}元</p>
       <select
+        style="min-width: 300px"
+        class="text-center"
         @change="changeExchangeRate(exchangeInput)"
         name="rate_from" id="rate_from"
         v-model="exchangeInput.rate_uuid">
@@ -166,7 +172,7 @@ export default {
     },
     async detectIsNumber(value) {
       return await checkIsIntegerGreaterThanZero(value);
-    }
+    },
   },
   watch: {
     currencies(data) {
@@ -205,9 +211,6 @@ export default {
 
 <style lang="scss">
   #rate {
-    table {
-      background-color: rgb(243 244 246);
-    }
     .input_hidden_arrows {
       &::-webkit-outer-spin-button,
       &::-webkit-inner-spin-button {

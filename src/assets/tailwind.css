@@ -1,3 +1,7 @@
+body{
+  background-color: rgb(115 115 115);
+}
+
 @tailwind base;
 
 @tailwind components;
@@ -11,9 +15,4 @@
   .sub_title {
     @apply text-2xl font-bold text-center text-white my-10
   }
-}
-
-body{
-  background: -webkit-linear-gradient(left, rgb(125 211 252), rgb(2 132 199));
-  background: linear-gradient(to right, rgb(125 211 252), rgb(2 132 199));
 }
