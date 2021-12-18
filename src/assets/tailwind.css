@@ -1,3 +1,7 @@
+body{
+  background-color: rgb(115 115 115);
+}
+
 @tailwind base;
 
 @tailwind components;
@@ -6,9 +10,15 @@
 
 @layer components {
   .title {
-    @apply text-3xl font-bold text-center my-10
+    @apply text-3xl font-bold text-center text-white my-10
   }
   .sub_title {
-    @apply text-2xl font-bold text-center my-10
+    @apply text-2xl font-bold text-center text-white my-10
+  }
+  .table {
+    @apply table-auto mx-auto my-10 bg-gray-100
+  }
+  .thead {
+    @apply border-2 text-white bg-gradient-to-t from-gray-400 to-gray-600
   }
 }
