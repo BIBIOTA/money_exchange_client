@@ -15,4 +15,10 @@ body{
   .sub_title {
     @apply text-2xl font-bold text-center text-white my-10
   }
+  .table {
+    @apply table-auto mx-auto my-10 bg-gray-100
+  }
+  .thead {
+    @apply border-2 text-white bg-gradient-to-t from-gray-400 to-gray-600
+  }
 }

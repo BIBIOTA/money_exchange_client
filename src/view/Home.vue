@@ -12,11 +12,11 @@
           :value="currency.currency_uuid">{{currency.name}} ({{currency.code}})</option>
       </select>
     </div>
-    <table class="table-auto mx-auto my-10 bg-gray-100" style="min-width: 300px">
+    <table class="table" style="min-width: 300px">
       <thead>
         <tr>
-          <th class="border-2 text-white bg-gradient-to-t from-gray-400 to-gray-600">幣別</th>
-          <th class="border-2 text-white bg-gradient-to-t from-gray-400 to-gray-600">1元{{computedSelectedCurrency.name}}匯率</th>
+          <th class="thead">幣別</th>
+          <th class="thead">1元{{computedSelectedCurrency.name}}匯率</th>
         </tr>
       </thead>
       <tbody>
