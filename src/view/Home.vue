@@ -9,20 +9,20 @@
         <option
           v-for="(currency, i) in currencies"
           :key="`currency_${i}`"
-          :value="currency.currency_uuid">{{currency.cn_name}}</option>
+          :value="currency.currency_uuid">{{currency.name}} ({{currency.code}})</option>
       </select>
     </div>
     <table class="table-auto mx-auto my-10" style="min-width: 300px">
       <thead>
         <tr>
           <th class="border-2">幣別</th>
-          <th class="border-2">1元{{computedSelectedCurrency.cn_name}}匯率</th>
+          <th class="border-2">1元{{computedSelectedCurrency.name}}匯率</th>
         </tr>
       </thead>
       <tbody>
         <template v-if="rates && rates?.length > 0">
           <tr v-for="(rate, index) in rates" :key="`rate_${index}`">
-            <td class="border-2 text-center">{{rate.name}}</td>
+            <td class="border-2 text-center">{{rate.name}} ({{rate.code}})</td>
             <td class="border-2 text-center">{{NumberEPSILON(rate.rate)}}</td>
           </tr>
         </template>
@@ -41,13 +41,13 @@
     <h2 class="sub_title">
       匯率換算
     </h2>
-    <div class="flex justify-center" v-if="computedSelectedCurrency.cn_name">
+    <div class="flex justify-center" v-if="computedSelectedCurrency.name">
       <input
         @input="changeExchangeRate(exchangeInput)"
         type="number"
         class="input_hidden_arrows"
         v-model="exchangeInput.amount" />
-      <p class="text-center">元{{computedSelectedCurrency.cn_name}}</p>
+      <p class="text-center">元{{computedSelectedCurrency.name}} ({{computedSelectedCurrency.code}})</p>
       <p class="text-center"> = {{NumberEPSILON(exchangeResult)}}元</p>
       <select
         @change="changeExchangeRate(exchangeInput)"
@@ -56,13 +56,14 @@
         <option
           v-for="(rate, i) in rates"
           :key="`currency_${i}`"
-          :value="rate.rate_uuid">{{rate.name}}</option>
+          :value="rate.rate_uuid">{{rate.name}} ({{rate.code}})</option>
       </select>
     </div>
   </div>
 </template>
 
 <script>
+import { ref } from 'vue';
 import gql from 'graphql-tag';
 import dayjs from 'dayjs';
 import { checkIsIntegerGreaterThanZero, NumberEPSILON } from '../validator/validator.js';
@@ -70,11 +71,12 @@ import { checkIsIntegerGreaterThanZero, NumberEPSILON } from '../validator/valid
 const curreniesGql = gql`query currencyList {
   currencies (
     filters: {
-      cn_name: "新台幣元"
+      code: "TWD"
     }
   ) {
     currency_uuid,
-    cn_name
+    name
+    code
     updated_at
   }
 }`;
@@ -85,8 +87,9 @@ const ratesGql = gql`query rateList($currency_uuid: ID) {
       currency_uuid: $currency_uuid
     }
   ) {
-    rate_uuid,
-    rate,
+    rate_uuid
+    rate
+    code
     name
   }
 }`;
@@ -112,15 +115,15 @@ export default {
   },
   data() {
       return {
-        selectedCurrency: null,
-        rates: null,
-        exchange: null,
-        exchangeInput: {
+        selectedCurrency: ref(null),
+        rates: ref(null),
+        exchange: ref(null),
+        exchangeInput: ref({
           amount: 1,
           currency_uuid: null,
           rate_uuid: null,
-        },
-        exchangeResult: 0,
+        }),
+        exchangeResult: ref(0),
       }
   },
   methods: {
@@ -141,7 +144,7 @@ export default {
     },
     changeExchangeRate(payload) {
       const { currency_uuid, rate_uuid, amount } = payload;
-      if (this.detectIsNumber(amount)) {
+      if (amount && this.detectIsNumber(amount)) {
         this.$apollo.addSmartQuery('exchange', {
           query: exchangeGql,
           variables: {
@@ -158,7 +161,7 @@ export default {
           },
         })
       } else {
-        this.exchangeInput = 1;
+        this.exchangeInput.amount = 1;
       }
     },
     async detectIsNumber(value) {
@@ -182,19 +185,19 @@ export default {
   },
   computed: {
     computedSelectedCurrency() {
-      let cn_name = '';
+      let name = '';
       let code = '';
       let updatedAt = null;
       if (this.currencies && this.currencies.length > 0) {
         this.currencies.forEach((item) => {
           if (item.currency_uuid === this.selectedCurrency) {
-            cn_name = item.cn_name;
+            name = item.name;
             code = item.code;
             updatedAt = dayjs(item.updated_at).locale('zh-tw').format('YYYY-MM-DD HH:mm:ss');
           }
         });
       }
-      return { cn_name, code, updatedAt };
+      return { name, code, updatedAt };
     },
   }
 }
