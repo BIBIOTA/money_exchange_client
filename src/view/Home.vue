@@ -205,6 +205,9 @@ export default {
 
 <style lang="scss">
   #rate {
+    table {
+      background-color: rgb(243 244 246);
+    }
     .input_hidden_arrows {
       &::-webkit-outer-spin-button,
       &::-webkit-inner-spin-button {
