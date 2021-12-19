@@ -1,24 +1,36 @@
-# client
+<h1>外幣匯率查詢</h1>
 
-## Project setup
-```
-yarn install
-```
+<a href="https://currency-exchanger-nestjs.bibiota.com/">https://currency-exchanger-nestjs.bibiota.com/</a>  <br/>
 
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
 
-### Compiles and minifies for production
-```
-yarn build
-```
+前端: Vue.js(Vue 3)、Tailwind
+<br />
+後端: NestJs(TypeScript)
+<br />
+API: GraphQL
+<br />
+Database: MongoDB
+<br />
+環境:
+Google Compute Engine (GCE)
+<br />
 
-### Lints and fixes files
-```
-yarn lint
-```
+功能:
+<br />
+每小時取得台灣銀行的外幣資料，可以換算新台幣轉外幣的金額<br />
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+外幣資料來源:
+<br />
+台灣銀行
+<br />
+<a href="https://rate.bot.com.tw/xrt?Lang=zh-TW
+">https://rate.bot.com.tw/xrt?Lang=zh-TW</a>
+<br />
+
+外幣ISO4217代碼資料來源:
+<br />
+cynthiachuang
+<br />
+<a href="https://cynthiachuang.github.io/ISO-4217-Currency-Codes/
+">https://cynthiachuang.github.io/ISO-4217-Currency-Codes/W</a>
+<br />
