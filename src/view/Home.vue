@@ -72,6 +72,7 @@
 import { ref } from 'vue';
 import gql from 'graphql-tag';
 import dayjs from 'dayjs';
+import { ConsoleHelper } from '../tools/consoleHelper';
 import { checkIsIntegerGreaterThanZero, NumberEPSILON } from '../validator/validator.js';
 
 const curreniesGql = gql`query currencyList {
@@ -141,7 +142,7 @@ export default {
           currency_uuid: value
         },
         result ({ data, loading, networkStatus }) {
-          console.log({ data, loading, networkStatus })
+          ConsoleHelper({ data, loading, networkStatus })
           if (data?.rates.length > 0) {
             this.rates = data.rates;
           }
@@ -159,7 +160,7 @@ export default {
             amount,
           },
           result ({ data, loading, networkStatus }) {
-            console.log({ data, loading, networkStatus })
+            ConsoleHelper({ data, loading, networkStatus })
             if (data?.exchange) {
               this.exchange = data.exchange;
               this.exchangeResult = data.exchange.result;
@@ -167,7 +168,8 @@ export default {
           },
         })
       } else {
-        this.exchangeInput.amount = 1;
+        this.exchangeInput.amount = '';
+        this.exchangeResult = 0;
       }
     },
     async detectIsNumber(value) {
