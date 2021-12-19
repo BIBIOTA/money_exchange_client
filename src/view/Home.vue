@@ -43,6 +43,7 @@
     </h2>
     <div class="flex flex-col items-center pb-20 " v-if="computedSelectedCurrency.name">
       <input
+        @keyup="inputNumberDistinct($event)"
         @input="changeExchangeRate(exchangeInput)"
         type="number"
         style="min-width: 300px"
@@ -73,7 +74,7 @@ import { ref } from 'vue';
 import gql from 'graphql-tag';
 import dayjs from 'dayjs';
 import { ConsoleHelper } from '../tools/consoleHelper';
-import { checkIsIntegerGreaterThanZero, NumberEPSILON } from '../validator/validator.js';
+import { checkIsIntegerGreaterThanZero, inputNumberDistinct, NumberEPSILON } from '../validator/validator.js';
 
 const curreniesGql = gql`query currencyList {
   currencies (
@@ -134,6 +135,7 @@ export default {
       }
   },
   methods: {
+    inputNumberDistinct,
     NumberEPSILON,
     changeCurrency(value) {
       this.$apollo.addSmartQuery('rates', {
@@ -151,7 +153,7 @@ export default {
     },
     changeExchangeRate(payload) {
       const { currency_uuid, rate_uuid, amount } = payload;
-      if (amount && this.detectIsNumber(amount)) {
+      if (amount && checkIsIntegerGreaterThanZero(amount)) {
         this.$apollo.addSmartQuery('exchange', {
           query: exchangeGql,
           variables: {
@@ -171,9 +173,6 @@ export default {
         this.exchangeInput.amount = '';
         this.exchangeResult = 0;
       }
-    },
-    async detectIsNumber(value) {
-      return await checkIsIntegerGreaterThanZero(value);
     },
   },
   watch: {
