@@ -19,6 +19,7 @@ export const checkIsIntegerGreaterThanZero = (v) => {
 @keycode(38) = Up
 @keycode(40) = Down
 @keycode(190) = .
+@keycode(229) = .(mobile)
 */
 export const inputNumberDistinct = (e) => {
   if(!((e.keyCode > 95 && e.keyCode < 106)
@@ -26,7 +27,8 @@ export const inputNumberDistinct = (e) => {
     || e.keyCode == 8
     || e.keyCode == 38
     || e.keyCode == 40
-    || (e.keyCode == 190))) {
+    || e.keyCode == 190
+    || e.keyCode == 229)) {
       e.target.value = '';
   }
 }
