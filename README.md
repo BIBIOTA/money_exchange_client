@@ -12,7 +12,7 @@ API: GraphQL
 Database: MongoDB
 <br />
 環境:
-Google Compute Engine (GCE)
+AWS (EC2)
 <br />
 
 功能:
